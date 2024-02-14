@@ -1,5 +1,5 @@
 import { Router } from "express";
-import cartManager from "../dao/fs/cartManager.js";
+import cartManager from "../dao/db/cart-manager-db.js";
 
 const router = Router();
 const cart = new cartManager();
@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 //buscar carrito por id
 router.get("/:cId", async (req, res) => {
   const cId = req.params.cId;
-  res.send(await cart.getCartById(cId));
+  res.send(await cart.getCarritoById(cId));
 });
 
 router.post("/:cId/products/:pId", async (req, res) => {

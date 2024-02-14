@@ -1,4 +1,4 @@
-import productModel from "../fs/models/product.model";
+import productModel from "../models/product.model.js";
 
 class ProductManager {
   async addProduct({
@@ -9,7 +9,7 @@ class ProductManager {
     code,
     stock,
     category,
-    thumbnails,
+    thumbnails: thumbnails,
   }) {
     try {
       if (!title || !description || !price || !code || !stock || !category) {
@@ -18,14 +18,14 @@ class ProductManager {
       }
 
       //Acá tenemos que cambiar la validacion:
-      const existeProducto = await ProductModel.findOne({ code: code });
+      const existeProducto = await productModel.findOne({ code: code });
 
       if (existeProducto) {
-        console.log("El código debe ser único, malditooo!!!");
+        console.log("El código debe ser único");
         return;
       }
 
-      const newProduct = new ProductModel({
+      const newProduct = new productModel({
         title,
         description,
         price,
@@ -46,7 +46,7 @@ class ProductManager {
 
   async getProducts() {
     try {
-      const productos = await ProductModel.find();
+      const productos = await productModel.find();
       return productos;
     } catch (error) {
       console.log("Error al obtener los productos", error);
@@ -55,14 +55,14 @@ class ProductManager {
 
   async getProductById(id) {
     try {
-      const producto = await ProductModel.findById(id);
+      const producto = await productModel.findById(id);
 
       if (!producto) {
         console.log("Producto no encontrado");
         return null;
       }
 
-      console.log("Producto encontrado!! Claro que siiiiii");
+      console.log("Producto encontrado!");
       return producto;
     } catch (error) {
       console.log("Error al traer un producto por id");
@@ -71,17 +71,17 @@ class ProductManager {
 
   async updateProduct(id, productoActualizado) {
     try {
-      const updateado = await ProductModel.findByIdAndUpdate(
+      const updateado = await productModel.findByIdAndUpdate(
         id,
         productoActualizado
       );
 
       if (!updateado) {
-        console.log("No se encuentra che el producto");
+        console.log("No se encuentra el producto");
         return null;
       }
 
-      console.log("Producto actualizado con exito, como todo en mi vidaa!");
+      console.log("Producto actualizado!");
       return updateado;
     } catch (error) {
       console.log("Error al actualizar el producto", error);
@@ -90,10 +90,12 @@ class ProductManager {
 
   async deleteProduct(id) {
     try {
-      const deleteado = await ProductModel.findByIdAndDelete(id);
+      const deleteado = await productModel.findByIdAndDelete(id);
 
       if (!deleteado) {
-        console.log("No se encuentraaaa, busca bien!");
+        console.log(
+          "No se encuentra el producto a eliminar, intente nuevamente"
+        );
         return null;
       }
 
@@ -104,3 +106,5 @@ class ProductManager {
     }
   }
 }
+
+export default ProductManager;

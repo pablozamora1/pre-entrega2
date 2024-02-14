@@ -1,33 +1,132 @@
 import { Router } from "express";
-import ProductManager from "../dao/fs/productManager.js";
+import ProductManager from "../dao/db/product-manager-db.js";
 
-const product = new ProductManager();
+
+const productManager = new ProductManager();
 const router = Router();
 
-//agregar productos
-router.post("/", async (req, res) => {
-  const newProduct = req.body;
-  res.send(await product.addProducts(newProduct));
-});
-//buscar productos por id
-router.get("/:pid", async (req, res) => {
-  const pid = req.params.pid;
-  res.send(await product.getProductById(pid));
-});
-// traer los productos
+//1) Listar todos los productos.
 router.get("/", async (req, res) => {
-  res.send(await product.getProducts());
+  try {
+    const limit = req.query.limit;
+    const productos = await productManager.getProducts();
+    if (limit) {
+      res.json(productos.slice(0, limit));
+    } else {
+      res.json(productos);
+    }
+  } catch (error) {
+    console.error("Error al obtener productos", error);
+    res.status(500).json({
+      error: "Error interno del servidor",
+    });
+  }
 });
-// delete productos
-router.delete("/:pid", async (req, res) => {
-  const pid = req.params.pid;
-  res.send(await product.deleteProduct(pid));
+
+//2) Traer solo un producto por id:
+
+router.get("/:pid", async (req, res) => {
+  const id = req.params.pid;
+
+  try {
+    const producto = await productManager.getProductById(id);
+    if (!producto) {
+      return res.json({
+        error: "Producto no encontrado",
+      });
+    }
+
+    res.json(producto);
+  } catch (error) {
+    console.error("Error al obtener producto", error);
+    res.status(500).json({
+      error: "Error interno del servidor",
+    });
+  }
 });
-//actualizar el producto
+
+//3) Agregar nuevo producto:
+
+router.post("/", async (req, res) => {
+  const nuevoProducto = req.body;
+
+  try {
+    await productManager.addProduct(nuevoProducto);
+    res.status(201).json({
+      message: "Producto agregado exitosamente",
+    });
+  } catch (error) {
+    console.error("Error al agregar producto", error);
+    res.status(500).json({
+      error: "Error interno del servidor",
+    });
+  }
+});
+
+//4) Actualizar por ID
 router.put("/:pid", async (req, res) => {
-  const pid = req.params.pid;
-  const updatedProduct = req.body;
-  res.send(await product.updateProduct(pid, updatedProduct));
+  const id = req.params.pid;
+  const productoActualizado = req.body;
+
+  try {
+    await productManager.updateProduct(id, productoActualizado);
+    res.json({
+      message: "Producto actualizado exitosamente",
+    });
+  } catch (error) {
+    console.error("Error al actualizar producto", error);
+    res.status(500).json({
+      error: "Error interno del servidor",
+    });
+  }
 });
+
+//5) Eliminar producto:
+
+router.delete("/:pid", async (req, res) => {
+  const id = req.params.pid;
+
+  try {
+    await productManager.deleteProduct(id);
+    res.json({
+      message: "Producto eliminado exitosamente",
+    });
+  } catch (error) {
+    console.error("Error al eliminar producto", error);
+    res.status(500).json({
+      error: "Error interno del servidor",
+    });
+  }
+});
+
+
+// const product = new ProductManager();
+// const router = Router();
+
+// //agregar productos
+// router.post("/", async (req, res) => {
+//   const newProduct = req.body;
+//   res.send(await product.addProduct(newProduct));
+// });
+// //buscar productos por id
+// router.get("/:pid", async (req, res) => {
+//   const pid = req.params.pid;
+//   res.send(await product.getProductById(pid));
+// });
+// // traer los productos
+// router.get("/", async (req, res) => {
+//   res.send(await product.getProducts());
+// });
+// // delete productos
+// router.delete("/:pid", async (req, res) => {
+//   const pid = req.params.pid;
+//   res.send(await product.deleteProduct(pid));
+// });
+// //actualizar el producto
+// router.put("/:pid", async (req, res) => {
+//   const pid = req.params.pid;
+//   const updatedProduct = req.body;
+//   res.send(await product.updateProduct(pid, updatedProduct));
+// });
 
 export default router;
