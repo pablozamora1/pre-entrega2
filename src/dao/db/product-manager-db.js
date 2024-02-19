@@ -17,10 +17,10 @@ class ProductManager {
         return;
       }
 
-      //Acá tenemos que cambiar la validacion:
-      const existeProducto = await productModel.findOne({ code: code });
+      
+      const existProduct = await productModel.findOne({ code: code });
 
-      if (existeProducto) {
+      if (existProduct) {
         console.log("El código debe ser único");
         return;
       }
@@ -55,34 +55,31 @@ class ProductManager {
 
   async getProductById(id) {
     try {
-      const producto = await productModel.findById(id);
+      const product = await productModel.findById(id);
 
-      if (!producto) {
+      if (!product) {
         console.log("Producto no encontrado");
         return null;
       }
 
       console.log("Producto encontrado!");
-      return producto;
+      return product;
     } catch (error) {
       console.log("Error al traer un producto por id");
     }
   }
 
-  async updateProduct(id, productoActualizado) {
+  async updateProduct(id, productUpdated) {
     try {
-      const updateado = await productModel.findByIdAndUpdate(
-        id,
-        productoActualizado
-      );
+      const updated = await productModel.findByIdAndUpdate(id, productUpdated);
 
-      if (!updateado) {
+      if (!updated) {
         console.log("No se encuentra el producto");
         return null;
       }
 
       console.log("Producto actualizado!");
-      return updateado;
+      return updated;
     } catch (error) {
       console.log("Error al actualizar el producto", error);
     }
@@ -90,9 +87,9 @@ class ProductManager {
 
   async deleteProduct(id) {
     try {
-      const deleteado = await productModel.findByIdAndDelete(id);
+      const deleted = await productModel.findByIdAndDelete(id);
 
-      if (!deleteado) {
+      if (!deleted) {
         console.log(
           "No se encuentra el producto a eliminar, intente nuevamente"
         );
