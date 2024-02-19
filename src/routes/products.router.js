@@ -1,19 +1,18 @@
 import { Router } from "express";
 import ProductManager from "../dao/db/product-manager-db.js";
 
-
-const productManager = new ProductManager();
 const router = Router();
+const productManager = new ProductManager();
 
 //1) Listar todos los productos.
 router.get("/", async (req, res) => {
   try {
     const limit = req.query.limit;
-    const productos = await productManager.getProducts();
+    const products = await productManager.getProducts();
     if (limit) {
-      res.json(productos.slice(0, limit));
+      res.json(products.slice(0, limit));
     } else {
-      res.json(productos);
+      res.json(products);
     }
   } catch (error) {
     console.error("Error al obtener productos", error);
@@ -29,14 +28,14 @@ router.get("/:pid", async (req, res) => {
   const id = req.params.pid;
 
   try {
-    const producto = await productManager.getProductById(id);
-    if (!producto) {
+    const product = await productManager.getProductById(id);
+    if (!product) {
       return res.json({
         error: "Producto no encontrado",
       });
     }
 
-    res.json(producto);
+    res.json(product);
   } catch (error) {
     console.error("Error al obtener producto", error);
     res.status(500).json({
@@ -99,34 +98,5 @@ router.delete("/:pid", async (req, res) => {
   }
 });
 
-
-// const product = new ProductManager();
-// const router = Router();
-
-// //agregar productos
-// router.post("/", async (req, res) => {
-//   const newProduct = req.body;
-//   res.send(await product.addProduct(newProduct));
-// });
-// //buscar productos por id
-// router.get("/:pid", async (req, res) => {
-//   const pid = req.params.pid;
-//   res.send(await product.getProductById(pid));
-// });
-// // traer los productos
-// router.get("/", async (req, res) => {
-//   res.send(await product.getProducts());
-// });
-// // delete productos
-// router.delete("/:pid", async (req, res) => {
-//   const pid = req.params.pid;
-//   res.send(await product.deleteProduct(pid));
-// });
-// //actualizar el producto
-// router.put("/:pid", async (req, res) => {
-//   const pid = req.params.pid;
-//   const updatedProduct = req.body;
-//   res.send(await product.updateProduct(pid, updatedProduct));
-// });
 
 export default router;

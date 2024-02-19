@@ -2,10 +2,10 @@ import express, { urlencoded, json } from "express";
 import { engine } from "express-handlebars";
 import productsRouter from "./src/routes/products.router.js";
 import cartRouter from "./src/routes/cart.router.js";
-import ProductManager from "./src/dao/fs/productManager.js";
+import ProductManager from "./src/dao/db/product-manager-db.js";
 const product = new ProductManager();
 import { Server } from "socket.io";
-import mongoose from "mongoose";
+
 import "./src/database.js";
 
 import viewsRouter from "./src/routes/views.router.js";

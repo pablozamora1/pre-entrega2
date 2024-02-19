@@ -1,28 +1,51 @@
 import { Router } from "express";
-import cartManager from "../dao/db/cart-manager-db.js";
+import CartManager from "../dao/db/cart-manager-db.js";
 
 const router = Router();
-const cart = new cartManager();
+const cartManager = new CartManager();
 
-//agregar carrito
 router.post("/", async (req, res) => {
-  res.send(await cart.addCart());
-});
-//leer carrito
-router.get("/", async (req, res) => {
-  res.send(await cart.readCart());
-});
-
-//buscar carrito por id
-router.get("/:cId", async (req, res) => {
-  const cId = req.params.cId;
-  res.send(await cart.getCarritoById(cId));
+  try {
+    const nuevoCarrito = await cartManager.crearCarrito();
+    res.json(nuevoCarrito);
+  } catch (error) {
+    console.error("Error al crear un nuevo carrito", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 });
 
-router.post("/:cId/products/:pId", async (req, res) => {
-  const idCart = req.params.cId;
-  const idProduct = req.params.pId;
-  res.send(await cart.addToCart(idCart, idProduct));
+//2) Listamos los productos que pertenecen a determinado carrito.
+
+router.get("/:cid", async (req, res) => {
+  const cartId = req.params.cid;
+
+  try {
+    const carrito = await cartManager.getCarritoById(cartId);
+    res.json(carrito.products);
+  } catch (error) {
+    console.error("Error al obtener el carrito", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
+});
+
+//3) Agregar productos a distintos carritos.
+
+router.post("/:cid/product/:pid", async (req, res) => {
+  const cartId = req.params.cid;
+  const productId = req.params.pid;
+  const quantity = req.body.quantity || 1;
+
+  try {
+    const actualizarCarrito = await cartManager.agregarProductoAlCarrito(
+      cartId,
+      productId,
+      quantity
+    );
+    res.json(actualizarCarrito.products);
+  } catch (error) {
+    console.error("Error al agregar producto al carrito", error);
+    res.status(500).json({ error: "Error interno del servidor" });
+  }
 });
 
 export default router;

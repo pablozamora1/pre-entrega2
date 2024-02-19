@@ -46,8 +46,8 @@ class ProductManager {
 
   async getProducts() {
     try {
-      const productos = await productModel.find();
-      return productos;
+      const products = await productModel.find();
+      return products;
     } catch (error) {
       console.log("Error al obtener los productos", error);
     }

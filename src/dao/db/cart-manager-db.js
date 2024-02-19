@@ -7,7 +7,7 @@ class CartManager {
       await nuevoCarrito.save();
       return nuevoCarrito;
     } catch (error) {
-      console.log("Error al crear el carrito de compras");
+      console.log("Error al crear el carrito de compras", error);
     }
   }
 
@@ -38,7 +38,6 @@ class CartManager {
         carrito.products.push({ product: productId, quantity });
       }
 
-      //Vamos a marcar la propiedad "products" como modificada antes de guardar:
       carrito.markModified("products");
 
       await carrito.save();
